@@ -1,7 +1,7 @@
 [![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/emilbillberg/x-router)
 
 # x-router
-A lightweight router built with webcomponents.
+A lightweight client-side router built with webcomponents.
 
 ## Install
 ```
@@ -10,7 +10,7 @@ bower install --save emilbillberg/x-router
 
 ## Example
 ```
-<x-router main on-route-change="routeChange1">
+<x-router main>
     <x-route name="home" pattern="^/$"></x-route>
     <x-route name="signup" pattern="^/signup$"></x-route>
     <x-route name="schedule" pattern="^/schedule$"></x-route>

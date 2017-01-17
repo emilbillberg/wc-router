@@ -1,6 +1,6 @@
 {
   "name": "x-router",
-  "description": "A lightweight router built with webcomponents.",
+  "description": "A lightweight client-side router built with webcomponents.",
   "main": "x-router.html",
   "license": "MIT",
   "homepage": "https://github.com/emilbillberg/x-router",
