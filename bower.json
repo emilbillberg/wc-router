@@ -1,0 +1,32 @@
+{
+  "name": "x-router",
+  "description": "A lightweight router built with webcomponents.",
+  "main": "x-router.html",
+  "license": "MIT",
+  "homepage": "https://github.com/emilbillberg/x-router",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/emilbillberg/x-router.git"
+  },
+  "ignore": [
+    "bower_components",
+    "demo",
+    "test",
+    "index.html",
+    ".*"
+  ],
+  "keywords": [
+    "webcomponents",
+    "polymer",
+    "router"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.4.0"
+  },
+  "devDependencies": {
+    "iron-component-page": "PolymerElements/iron-component-page#^1.0.0",
+    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.0.0",
+    "web-component-tester": "^4.0.0",
+    "webcomponentsjs": "webcomponents/webcomponentsjs#^0.7.0"
+  }
+}
