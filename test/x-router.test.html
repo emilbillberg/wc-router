@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+  <title>x-router test</title>
+
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+
+  <link rel="import" href="../x-router.html">
+
+</head>
+
+<body>
+
+  <test-fixture id="element">
+    <template>
+      <x-router>
+        <x-route name="home" pattern="^/$"></x-route>
+        <x-route name="signup" pattern="^/signup$"></x-route>
+        <x-route name="schedule" pattern="^/schedule$"></x-route>
+        <x-route name="info" pattern="^/info$"></x-route>
+      </x-router>
+    </template>
+  </test-fixture>
+
+  <script>
+
+      suite('x-router', function () {
+        
+        let element;
+        setup(function () {
+          element = fixture('element');
+        })
+
+        test('instantiating the element works', function () {
+          assert.equal(element.is, 'x-router');
+        });
+
+        suite('finds all children', function () {
+
+          test('length of children is 4', function () {
+            let children = element._getRouteChildren();
+            assert.equal(children.length, 4);
+          });
+
+          test('second child is singup', function () {
+            let children = element._getRouteChildren();
+            assert.equal(children[1].getAttribute('name'), 'signup');
+          });
+
+        });
+
+        suite('query string to object', function () {
+
+          test('two query parameter works', function () {
+            let search = 'firstName=James&lastName=Bond';
+            let object = element._queryStringToObject(search);
+            assert.equal(object.firstName, 'James');
+            assert.equal(object.lastName, 'Bond');
+          });
+
+          test('special character works', function () {
+            let search = 'firstName=Göran';
+            let object = element._queryStringToObject(search);
+            assert.equal(object.firstName, 'Göran');
+          });
+
+          test('url encoded character works', function () {
+            let search = 'firstName=James%20Bond';
+            let object = element._queryStringToObject(search);
+            assert.equal(object.firstName, 'James Bond');
+          });
+
+        });
+
+        suite('find child name for path', function () {
+
+          test('finds "home"', function () {
+            let name = element._findChildNameForPath(element.children, '/');
+            assert.equal(name, 'home');
+          });
+
+          test('finds "signup"', function () {
+            let name = element._findChildNameForPath(element.children, '/signup');
+            assert.equal(name, 'signup');
+          });
+
+          test('finds "schedule"', function () {
+            let name = element._findChildNameForPath(element.children, '/schedule');
+            assert.equal(name, 'schedule');
+          });
+
+          test('finds "info"', function () {
+            let name = element._findChildNameForPath(element.children, '/info');
+            assert.equal(name, 'info');
+          });
+
+          test('does not find "unknown"', function () {
+            let name = element._findChildNameForPath(element.children, '/unknown');
+            assert.equal(name, null);
+          });
+
+        });
+
+        suite('split path name', function () {
+
+          test('splits "/" correctly', function () {
+            let paths = element._splitPathName('/');
+            assert.equal(paths[0], '/');
+          });
+
+          test('splits longer path correctly', function () {
+            let paths = element._splitPathName('/one/two/three');
+            assert.equal(paths[0], '/one');
+            assert.equal(paths[1], '/two');
+            assert.equal(paths[2], '/three');
+          });
+
+          test('has correct length of paths array', function () {
+            let paths = element._splitPathName('/one/two/three');
+            assert.equal(paths.length, 3);
+          });
+
+        });
+
+        suite('current path name from paths', function () {
+
+          test('change first route', function () {
+            const paths = ['/one', '/two', 'three'];
+            const pathName = ['/myRoute'];
+            const index = 0;
+            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            assert.equal(newPathName, '/myRoute');
+          });
+
+          test('change second route', function () {
+            const paths = ['/one', '/two', 'three'];
+            const pathName = ['/myRoute'];
+            const index = 1;
+            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            assert.equal(newPathName, '/one/myRoute');
+          });
+
+          test('change third route', function () {
+            const paths = ['/one', '/two', 'three'];
+            const pathName = ['/myRoute'];
+            const index = 2;
+            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            assert.equal(newPathName, '/one/two/myRoute');
+          });
+
+          test('change route out of index', function () {
+            const paths = ['/one', '/two', 'three'];
+            const pathName = ['/myRoute'];
+            const index = 3;
+            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            assert.equal(newPathName, null);
+          });
+
+        });
+
+      });
+
+    </script>
+
+</body>
+
+</html>
