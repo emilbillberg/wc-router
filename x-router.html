@@ -1,0 +1,266 @@
+<link rel="import" href="../polymer/polymer.html">
+
+<!--
+`x-router`
+A lightweight client-side router built with webcomponents.
+
+@demo demo/index.html 
+-->
+
+<dom-module id="x-router">
+
+    <script>
+
+        Polymer({
+
+            /*
+             * Fired when the route change. Detail object contains:
+             *  - `currentPath` - the current path for the route.
+             *  - `parentPath` - the parent path for the route.
+             *  - `fullPath` - the full path (window.location.pathName).
+             *  - `queryObject` - the query parameters as an object.
+             *  - `fragment` - the hasp part of the url.
+             *  - `name` - the name of the route defined in `x-route` element
+             *  - `state` - the `window.history.state` object for the route. Will only contain a state object if the route is `active`.
+             *  - `active` - a boolean. Will be true if route exists and the route does not have a subroute.
+             *  - `subroute` - an object that should be passed to a subroute.
+             * @event route-change
+             */
+
+            is: 'x-router',
+
+            properties: {
+
+                /*
+                 * Defines the main or root router that is at the top of the hierarchy and is not a subroute. 
+                 * Only the top router should set this attribute to true.
+                 */
+                main: {
+                    type: Boolean,
+                    value: false,
+                },
+
+                /*
+                 * A subroute object usually passed in from a router higher up in the hierarchy.
+                 */
+                route: {
+                    type: Object,
+                    observer: `_observeRroute`,
+                    value: function () {
+                        return {
+                            index: 0
+                        }
+                    }
+                },
+
+            },
+
+            attached: function () {
+                if (this.main) {
+                    this.listen(window, 'popstate', '_popStateEvent');
+                    this.listen(document.body, 'click', '_clickEvent');
+                    this._routeChanged();
+                }
+            },
+
+            detached: function () {
+                if (this.main) {
+                    this.unlisten(window, 'popstate', '_popStateEvent');
+                    this.unlisten(document.body, 'click', '_clickEvent');
+                }
+            },
+
+            /*
+             * Handle the pop state event.
+             */
+            _popStateEvent: function () {
+                this._routeChanged();
+            },
+
+            /*
+             * Handle the global click event. This is a click event on the body (necessary evil) that hijacks the click event
+             * for all anchor tags. Tries to out early if it can.
+             */
+            _clickEvent: function (event) {
+                if (event.defaultPrevented) {
+                    return;
+                }
+
+                const eventPath = Polymer.dom(event).path;
+                let anchor = null;
+                for (let i = 0; i < eventPath.length; i++) {
+                    let element = eventPath[i];
+                    if (element.tagName === `A` && element.href) {
+                        anchor = element;
+                        break;
+                    }
+                }
+
+                if (!anchor) {
+                    return;
+                }
+
+                if ((anchor.target === `_blank`) || (anchor.target === `_top`) || (anchor.target === `_parent`)) {
+                    return;
+                }
+
+                if (anchor.href.startsWith(`mailto:`) || anchor.href.startsWith(`tel:`)) {
+                    return;
+                }
+
+                event.preventDefault();
+
+                if (anchor.href === window.location.href) {
+                    return;
+                }
+
+                this._go(anchor.href, null, anchor.hasAttribute(`replace`));
+            },
+
+            /*
+             * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
+             * Will use history.pushState to navigate.
+             */
+            push: function (pathName, state) {
+                this._go(pathName, state, false);
+            },
+
+            /*
+             * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
+             * Will use history.replaceState to navigate.
+             */
+            replace: function (pathName, state) {
+                this._go(pathName, state, true);
+            },
+
+            /*
+             * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
+             * A truthy replace parameter will use history.replaceState instead of history.pushState to navigate.
+             */
+            _go: function (pathName, state, replace) {
+                const paths = this._splitPathName(window.location.pathname);
+                const newPathName = this._currentPathNameFromPaths(paths, pathName, this.route.index);
+                if (newPathName) {
+                    if (replace) {
+                        window.history.replaceState(state, ``, newPathName);
+                    } else {
+                        window.history.pushState(state, ``, newPathName);
+                    }
+                    this._routeChanged();
+                } else {
+                    console.warn(`Route is outside its index`);
+                }
+            },
+
+            /*
+             * Observe the subroute object and respond to changes.
+             */
+            _observeRroute: function (route) {
+                if (route.index !== 0) {
+                    const paths = this._splitPathName(window.location.pathname);
+                    if (route.index < paths.length) {
+                        this._routeChanged();
+                    }
+                }
+            },
+
+            /*
+             * Fires event `route-change` with information about current route.
+             */
+            _routeChanged: function () {
+                const children = this._getRouteChildren();
+                const paths = this._splitPathName(window.location.pathname);
+                const currentPath = paths[this.route.index];
+                const parentPath = paths.slice(0, this.route.index).join(``);
+                const fullPath = window.decodeURIComponent(window.location.pathname);
+                const queryObject = this._queryStringToObject(window.location.search.substring(1));
+                const fragment = window.decodeURIComponent(window.location.hash.substring(1));
+                const name = this._findChildNameForPath(children, currentPath);
+                const active = (`${parentPath}${currentPath}` === fullPath);
+                const state = (active) ? window.history.state : null;
+                const subroute = {
+                    index: this.route.index + 1
+                };
+
+                this.fire(`route-change`, {
+                    currentPath: currentPath,
+                    parentPath: parentPath,
+                    fullPath: fullPath,
+                    queryObject: queryObject,
+                    fragment: fragment,
+                    name: name,
+                    state: state,
+                    active: active,
+                    subroute: subroute
+                });
+            },
+
+            /*
+             * Transforms the query string to an object.
+             */
+            _queryStringToObject: function (queryString) {
+                let querybject = {};
+                const decodedQueryString = window.decodeURIComponent(queryString);
+                decodedQueryString.split(`&`).forEach((q) => {
+                    const parameter = q.split(`=`);
+                    if (parameter.length === 2) {
+                        querybject[window.decodeURIComponent(parameter[0])] = window.decodeURIComponent(parameter[1]);
+                    }
+                });
+                return querybject;
+            },
+
+            /*
+             * Finds all child elements.
+             */
+            _getRouteChildren: function () {
+                return Polymer.dom(this).querySelectorAll(`x-route[pattern]`);
+            },
+
+            /*
+             * Create the pathname for the current route. Will not change the pathname for a route higher up 
+             * in the route hierarchy.
+             */
+            _currentPathNameFromPaths: function (paths, pathName, index) {
+                if (index < paths.length) {
+                    const parentPaths = paths.slice(0, index);
+                    parentPaths.push(pathName);
+                    return parentPaths.join(``);
+                } else {
+                    return null;
+                }
+            },
+
+            /*
+             * Finds the name of the path by mathing the child's regex pattern to the path.
+             */
+            _findChildNameForPath: function (children, path) {
+                for (let i = 0; i < children.length; i++) {
+                    const child = children[i];
+                    const pattern = child.getAttribute(`pattern`);
+                    const regex = new RegExp(pattern);
+                    if (regex.test(path)) {
+                        return name = child.getAttribute(`name`);
+                    }
+                }
+                return null;
+            },
+
+            /*
+             * Splits the pathname to an array.
+             */
+            _splitPathName: function (pathName) {
+                if (pathName === `/`) {
+                    return [`/`];
+                } else {
+                    return window.decodeURIComponent(pathName).split(`/`)
+                        .filter((pathName) => { return pathName !== ``; })
+                        .map((pathName => { return `/${pathName}` }));
+                }
+            },
+
+        });
+
+    </script>
+
+</dom-module>
