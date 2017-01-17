@@ -2,6 +2,8 @@
 
 # x-router
 A lightweight client-side router built with webcomponents.
+- [Documentation](https://www.webcomponents.org/element/emilbillberg/x-router/x-router)
+- [Demo](https://www.webcomponents.org/element/emilbillberg/x-router/demo/demo/index.html)
 
 ## Install
 ```
