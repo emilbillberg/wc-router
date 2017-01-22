@@ -204,7 +204,7 @@ The order of the `x-path` children matters and will return the first match.
                 const paths = this._splitPathname(this._locationPathName());
                 const currentPathname = paths[this.route.index];
                 const parentPathname = paths.slice(0, this.route.index).join(``);
-                const pathname = window.decodeURIComponent(this._locationPathName());
+                const pathname = this._locationPathName();
                 const queryObject = this._queryStringToObject(window.location.search.substring(1));
                 const fragment = window.decodeURIComponent(window.location.hash.substring(1));
                 const name = this._findChildNameForPath(children, currentPath);
@@ -287,7 +287,7 @@ The order of the `x-path` children matters and will return the first match.
                 if (pathname === `/`) {
                     return [`/`];
                 } else {
-                    return window.decodeURIComponent(pathname).split(`/`)
+                    return pathname.split(`/`)
                         .filter((pathname) => { return pathname !== ``; })
                         .map((pathname => { return `/${pathname}` }));
                 }
@@ -297,7 +297,11 @@ The order of the `x-path` children matters and will return the first match.
              * Returns the window.location.pathname unless `_mockLocationPathname` has a value.
              */
             _locationPathName: function() {
-                return (this._mockLocationPathname) ? this._mockLocationPathname : window.location.pathname;
+                if (this._mockLocationPathname) {
+                    return window.decodeURIComponent(this._mockLocationPathname);
+                } else {
+                    return window.decodeURIComponent(window.location.pathname);
+                }
             },
 
         });
