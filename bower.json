@@ -18,7 +18,8 @@
   "keywords": [
     "webcomponents",
     "polymer",
-    "router"
+    "router",
+    "routing"
   ],
   "dependencies": {
     "polymer": "Polymer/polymer#^1.4.0"
