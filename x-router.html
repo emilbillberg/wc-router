@@ -38,9 +38,9 @@ The order of the `x-path` children matters and will return the first match.
 
             /*
              * Fired when the route changes. Detail object contains:
-             *  - `currentPath` - the current path for the route.
-             *  - `parentPath` - the parent path for the route.
-             *  - `fullPath` - the full path (window.location.pathName).
+             *  - `currentPathname` - the current pathname for the route.
+             *  - `parentPathname` - the parent pathname for the route.
+             *  - `pathname` - the full pathname (window.location.pathname).
              *  - `queryObject` - the query parameters as an object.
              *  - `fragment` - the hash part of the url.
              *  - `name` - the name of the route defined in `x-path` element. If no match it will be null.
@@ -202,22 +202,22 @@ The order of the `x-path` children matters and will return the first match.
             _routeChanged: function () {
                 const children = this._getRouteChildren();
                 const paths = this._splitPathname(this._locationPathName());
-                const currentPath = paths[this.route.index];
-                const parentPath = paths.slice(0, this.route.index).join(``);
-                const fullPath = window.decodeURIComponent(this._locationPathName());
+                const currentPathname = paths[this.route.index];
+                const parentPathname = paths.slice(0, this.route.index).join(``);
+                const pathname = window.decodeURIComponent(this._locationPathName());
                 const queryObject = this._queryStringToObject(window.location.search.substring(1));
                 const fragment = window.decodeURIComponent(window.location.hash.substring(1));
                 const name = this._findChildNameForPath(children, currentPath);
-                const active = (`${parentPath}${currentPath}` === fullPath);
+                const active = (`${parentPathname}${currentPathname}` === pathname);
                 const state = (active) ? window.history.state : null;
                 const subroute = {
                     index: this.route.index + 1
                 };
 
                 this.fire(`route-change`, {
-                    currentPath: currentPath,
-                    parentPath: parentPath,
-                    fullPath: fullPath,
+                    currentPathname: currentPathname,
+                    parentPathname: parentPathname,
+                    pathname: pathname,
                     queryObject: queryObject,
                     fragment: fragment,
                     name: name,
