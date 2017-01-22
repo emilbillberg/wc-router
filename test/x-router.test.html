@@ -116,19 +116,19 @@
         suite('split path name', function () {
 
           test('splits "/" correctly', function () {
-            let paths = element._splitPathName('/');
+            let paths = element._splitPathname('/');
             assert.equal(paths[0], '/');
           });
 
           test('splits longer path correctly', function () {
-            let paths = element._splitPathName('/one/two/three');
+            let paths = element._splitPathname('/one/two/three');
             assert.equal(paths[0], '/one');
             assert.equal(paths[1], '/two');
             assert.equal(paths[2], '/three');
           });
 
           test('has correct length of paths array', function () {
-            let paths = element._splitPathName('/one/two/three');
+            let paths = element._splitPathname('/one/two/three');
             assert.equal(paths.length, 3);
           });
 
@@ -140,7 +140,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 0;
-            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, '/myRoute');
           });
 
@@ -148,7 +148,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 1;
-            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, '/one/myRoute');
           });
 
@@ -156,7 +156,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 2;
-            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, '/one/two/myRoute');
           });
 
@@ -164,7 +164,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 3;
-            let newPathName = element._currentPathNameFromPaths(paths, pathName, index);
+            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, null);
           });
 
