@@ -103,14 +103,20 @@ The order of the `x-path` children matters and will return the first match.
 
             },
 
+            /*
+             * Life cycle. Add event listeners for main router.
+             */
             attached: function () {
                 if (this.main) {
                     this.listen(window, 'popstate', '_popStateEvent');
                     this.listen(document.body, 'click', '_clickEvent');
-                    this._routeChanged();
+                    this._dispatchRouteChangeEvent();
                 }
             },
 
+            /*
+             * Life cycle. Remove event listeners for main router.
+             */
             detached: function () {
                 if (this.main) {
                     this.unlisten(window, 'popstate', '_popStateEvent');
@@ -122,7 +128,7 @@ The order of the `x-path` children matters and will return the first match.
              * Handle the pop state event.
              */
             _popStateEvent: function () {
-                this._routeChanged();
+                this._dispatchRouteChangeEvent();
             },
 
             /*
@@ -194,7 +200,7 @@ The order of the `x-path` children matters and will return the first match.
                     } else {
                         window.history.pushState(state, ``, newPathname);
                     }
-                    this._routeChanged();
+                    this._dispatchRouteChangeEvent();
                 } else {
                     console.warn(`Route is outside its index`);
                 }
@@ -207,7 +213,7 @@ The order of the `x-path` children matters and will return the first match.
                 if (route.index !== 0) {
                     const paths = this._splitPathname(this._locationPathName());
                     if (route.index < paths.length) {
-                        this._routeChanged();
+                        this._dispatchRouteChangeEvent();
                     }
                 }
             },
@@ -215,7 +221,7 @@ The order of the `x-path` children matters and will return the first match.
             /*
              * Fires event `route-change` with information about current route.
              */
-            _routeChanged: function () {
+            _dispatchRouteChangeEvent: function () {
                 const children = this._getRouteChildren();
                 const paths = this._splitPathname(this._locationPathName());
                 const currentPathname = paths[this.route.index];
