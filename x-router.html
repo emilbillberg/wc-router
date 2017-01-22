@@ -41,11 +41,12 @@ A lightweight client-side router built with webcomponents.
                 },
 
                 /*
-                 * A subroute object usually passed in from a router higher up in the hierarchy.
+                 * A subroute object usually passed in from a router higher up in the hierarchy. A router with the `main`
+                 * attribute will never have a subroute object passed in; should only be used for subroutes.
                  */
                 route: {
                     type: Object,
-                    observer: `_observeRroute`,
+                    observer: `_observeRoute`,
                     value: function () {
                         return {
                             index: 0
@@ -155,7 +156,7 @@ A lightweight client-side router built with webcomponents.
             /*
              * Observe the subroute object and respond to changes.
              */
-            _observeRroute: function (route) {
+            _observeRoute: function (route) {
                 if (route.index !== 0) {
                     const paths = this._splitPathName(window.location.pathname);
                     if (route.index < paths.length) {
