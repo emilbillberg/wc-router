@@ -241,7 +241,7 @@ A lightweight client-side router built with webcomponents.
                     const pattern = child.getAttribute(`pattern`);
                     const regex = new RegExp(pattern);
                     if (regex.test(path)) {
-                        return name = child.getAttribute(`name`);
+                        return child.getAttribute(`name`);
                     }
                 }
                 return null;
