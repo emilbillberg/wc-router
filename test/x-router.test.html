@@ -76,6 +76,12 @@
             assert.equal(object.firstName, 'James Bond');
           });
 
+          test('empty string returns undefined variable', function () {
+            let search = '';
+            let object = element._queryStringToObject(search);
+            assert.equal(object.firstName, undefined);
+          });
+
         });
 
         suite('find child name for path', function () {
