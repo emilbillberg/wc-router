@@ -1,5 +1,6 @@
 {
   "name": "x-router",
+  "version": "0.2.0",
   "description": "A lightweight client-side router built with webcomponents.",
   "main": "x-router.html",
   "license": "MIT",
