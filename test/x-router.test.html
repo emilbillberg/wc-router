@@ -209,6 +209,67 @@
 
         });
 
+        suite('route-change event', function () {
+
+          test('dispatch an event', function (done) {
+            element.addEventListener('route-change', (event) => {
+              done();
+            });
+            element.push('/signup', null);
+          });
+
+          test('returns correct name in event', function (done) {
+            element.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.name, 'signup');
+              done();
+            });
+            element.push('/signup', null);
+          });
+
+          test('returns correct current pathname in event', function (done) {
+            element.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.currentPathname, '/category');
+              done();
+            });
+            element.push('/category/shoes', null);
+          });
+
+          test('returns correct pathname in event', function (done) {
+            element.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.pathname, '/category/shoes');
+              done();
+            });
+            element.push('/category/shoes', null);
+          });
+
+          test('returns correct parent pathname in event', function (done) {
+            element.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.parentPathname, '');
+              done();
+            });
+            element.push('/category/shoes', null);
+          });
+
+          test('returns correct name in event', function (done) {
+            element.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.hash, 'hash');
+              done();
+            });
+            element._mockLocationHash = '#hash';
+            element.push('/', null);
+          });
+
+          test('returns correct query object in event', function (done) {
+            element.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.queryObject.firstName, 'John');
+              done();
+            });
+            element._mockLocationSearch = '?firstName=John';
+            element.push('/', null);
+          });
+
+        });
+
       });
 
     </script>
