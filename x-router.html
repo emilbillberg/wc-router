@@ -214,7 +214,7 @@ The order of the `x-path` children matters and will return the first match.
                     index: this.route.index + 1
                 };
 
-                this.fire(`route-change`, {
+                const detail = {
                     currentPathname: currentPathname,
                     parentPathname: parentPathname,
                     pathname: pathname,
@@ -224,7 +224,9 @@ The order of the `x-path` children matters and will return the first match.
                     state: state,
                     active: active,
                     subroute: subroute
-                });
+                };
+
+                this.dispatchEvent(new CustomEvent('route-change', {detail: detail}), {bubbles: true});
             },
 
             /*
