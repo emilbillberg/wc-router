@@ -2,7 +2,30 @@
 
 <!--
 `x-router`
-A lightweight client-side router built with webcomponents.
+
+A modular lightweight client-side router built with webcomponents. The router is used by composing multiple x-router elements 
+that are each responsible for its own path. For example, the pathname: `/first/second` would require two x-router elements. One responsible 
+for the pathname `/first` and one responsible for the pathname `/second`. The x-router element responsible for the `/first` pathname is the 
+main router and require the attribute main. The x-router element responsible for the `/second` pathname is a subrouter. A subrouter has a route 
+property that the previous router has to set. Each router fires the event `route-change` every time the router's property changes. 
+Please look in the api reference for more information about the `route-change` event.
+
+Normally the x-router element takes a number of child elements called x-path, although they are not required. If a x-path element is 
+added as a child they require two attributes: `pattern` and `name`. Pattern takes a regex string used to match the route's pathname. If the 
+pattern matches the `route-change` event will contain the `name` attribute. If none of the patterns match the name property will be null.
+The order of the `x-path` children matters and will return the first match.
+
+```
+<x-router main>
+    <x-path name="home" pattern="^/$"></x-path>
+    <x-path name="category" pattern="^/category$"></x-path>
+</x-router>
+
+<x-router route="[[subroute]]">
+    <x-path name="clothes" pattern="^/clothes$"></x-path>
+    <x-path name="shoes" pattern="^/shoes$"></x-path>
+</x-router>
+```
 
 @demo demo/index.html 
 -->
@@ -14,13 +37,13 @@ A lightweight client-side router built with webcomponents.
         Polymer({
 
             /*
-             * Fired when the route change. Detail object contains:
+             * Fired when the route changes. Detail object contains:
              *  - `currentPath` - the current path for the route.
              *  - `parentPath` - the parent path for the route.
              *  - `fullPath` - the full path (window.location.pathName).
              *  - `queryObject` - the query parameters as an object.
              *  - `fragment` - the hash part of the url.
-             *  - `name` - the name of the route defined in `x-path` element
+             *  - `name` - the name of the route defined in `x-path` element. If no match it will be null.
              *  - `state` - the `window.history.state` object for the route. Will only contain a state object if the route is `active`.
              *  - `active` - a boolean. Will be true if route exists and the route does not have a subroute.
              *  - `subroute` - an object that should be passed to a subroute.
@@ -122,30 +145,30 @@ A lightweight client-side router built with webcomponents.
              * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
              * Will use history.pushState to navigate.
              */
-            push: function (pathName, state) {
-                this._go(pathName, state, false);
+            push: function (pathname, state) {
+                this._go(pathname, state, false);
             },
 
             /*
              * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
              * Will use history.replaceState to navigate.
              */
-            replace: function (pathName, state) {
-                this._go(pathName, state, true);
+            replace: function (pathname, state) {
+                this._go(pathname, state, true);
             },
 
             /*
              * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
              * A truthy replace parameter will use history.replaceState instead of history.pushState to navigate.
              */
-            _go: function (pathName, state, replace) {
-                const paths = this._splitPathName(window.location.pathname);
-                const newPathName = this._currentPathNameFromPaths(paths, pathName, this.route.index);
-                if (newPathName) {
+            _go: function (pathname, state, replace) {
+                const paths = this._splitPathname(window.location.pathname);
+                const newPathname = this._currentPathnameFromPaths(paths, pathname, this.route.index);
+                if (newPathname) {
                     if (replace) {
-                        window.history.replaceState(state, ``, newPathName);
+                        window.history.replaceState(state, ``, newPathname);
                     } else {
-                        window.history.pushState(state, ``, newPathName);
+                        window.history.pushState(state, ``, newPathname);
                     }
                     this._routeChanged();
                 } else {
@@ -158,7 +181,7 @@ A lightweight client-side router built with webcomponents.
              */
             _observeRoute: function (route) {
                 if (route.index !== 0) {
-                    const paths = this._splitPathName(window.location.pathname);
+                    const paths = this._splitPathname(window.location.pathname);
                     if (route.index < paths.length) {
                         this._routeChanged();
                     }
@@ -170,7 +193,7 @@ A lightweight client-side router built with webcomponents.
              */
             _routeChanged: function () {
                 const children = this._getRouteChildren();
-                const paths = this._splitPathName(window.location.pathname);
+                const paths = this._splitPathname(window.location.pathname);
                 const currentPath = paths[this.route.index];
                 const parentPath = paths.slice(0, this.route.index).join(``);
                 const fullPath = window.decodeURIComponent(window.location.pathname);
@@ -222,7 +245,7 @@ A lightweight client-side router built with webcomponents.
              * Create the pathname for the current route. Will not change the pathname for a route higher up 
              * in the route hierarchy.
              */
-            _currentPathNameFromPaths: function (paths, pathName, index) {
+            _currentPathnameFromPaths: function (paths, pathName, index) {
                 if (index < paths.length) {
                     const parentPaths = paths.slice(0, index);
                     parentPaths.push(pathName);
@@ -250,13 +273,13 @@ A lightweight client-side router built with webcomponents.
             /*
              * Splits the pathname to an array.
              */
-            _splitPathName: function (pathName) {
-                if (pathName === `/`) {
+            _splitPathname: function (pathname) {
+                if (pathname === `/`) {
                     return [`/`];
                 } else {
-                    return window.decodeURIComponent(pathName).split(`/`)
-                        .filter((pathName) => { return pathName !== ``; })
-                        .map((pathName => { return `/${pathName}` }));
+                    return window.decodeURIComponent(pathname).split(`/`)
+                        .filter((pathname) => { return pathname !== ``; })
+                        .map((pathname => { return `/${pathname}` }));
                 }
             },
 
