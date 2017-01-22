@@ -246,7 +246,7 @@ The order of the `x-path` children matters and will return the first match.
              * Finds all child elements with selector `x-path[pattern][name]`.
              */
             _getRouteChildren: function () {
-                return Polymer.dom(this).querySelectorAll(`x-path[pattern][name]`);
+                return this.querySelectorAll(`x-path[pattern][name]`);
             },
 
             /*
