@@ -42,7 +42,7 @@ The order of the `x-path` children matters and will return the first match.
              *  - `parentPathname` - the parent pathname for the route.
              *  - `pathname` - the full pathname (window.location.pathname).
              *  - `queryObject` - the query parameters as an object.
-             *  - `fragment` - the hash part of the url.
+             *  - `hash` - the hash part of the url.
              *  - `name` - the name of the route defined in `x-path` element. If no match it will be null.
              *  - `state` - the `window.history.state` object for the route. Will only contain a state object if the route is `active`.
              *  - `active` - a boolean. Will be true if route exists and the route does not have a subroute.
@@ -222,8 +222,8 @@ The order of the `x-path` children matters and will return the first match.
                 const parentPathname = paths.slice(0, this.route.index).join(``);
                 const pathname = this._locationPathName();
                 const queryObject = this._queryStringToObject(this._locationSearch());
-                const fragment = this._locationHash();
-                const name = this._findChildNameForPath(children, currentPath);
+                const hash = this._locationHash();
+                const name = this._findChildNameForPath(children, currentPathname);
                 const active = (`${parentPathname}${currentPathname}` === pathname);
                 const state = (active) ? window.history.state : null;
                 const subroute = {
@@ -235,7 +235,7 @@ The order of the `x-path` children matters and will return the first match.
                     parentPathname: parentPathname,
                     pathname: pathname,
                     queryObject: queryObject,
-                    fragment: fragment,
+                    hash: hash,
                     name: name,
                     state: state,
                     active: active,
