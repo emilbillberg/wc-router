@@ -13,10 +13,10 @@ bower install --save emilbillberg/x-router
 ## Example
 ```
 <x-router main>
-    <x-route name="home" pattern="^/$"></x-route>
-    <x-route name="signup" pattern="^/signup$"></x-route>
-    <x-route name="schedule" pattern="^/schedule$"></x-route>
-    <x-route name="info" pattern="^/info$"></x-route>
+    <x-path name="home" pattern="^/$"></x-path>
+    <x-path name="signup" pattern="^/signup$"></x-path>
+    <x-path name="schedule" pattern="^/schedule$"></x-path>
+    <x-path name="info" pattern="^/info$"></x-path>
 </x-router>
 ```
 

@@ -20,7 +20,7 @@ A lightweight client-side router built with webcomponents.
              *  - `fullPath` - the full path (window.location.pathName).
              *  - `queryObject` - the query parameters as an object.
              *  - `fragment` - the hash part of the url.
-             *  - `name` - the name of the route defined in `x-route` element
+             *  - `name` - the name of the route defined in `x-path` element
              *  - `state` - the `window.history.state` object for the route. Will only contain a state object if the route is `active`.
              *  - `active` - a boolean. Will be true if route exists and the route does not have a subroute.
              *  - `subroute` - an object that should be passed to a subroute.
@@ -212,10 +212,10 @@ A lightweight client-side router built with webcomponents.
             },
 
             /*
-             * Finds all child elements.
+             * Finds all child elements with selector `x-path[pattern][name]`.
              */
             _getRouteChildren: function () {
-                return Polymer.dom(this).querySelectorAll(`x-route[pattern]`);
+                return Polymer.dom(this).querySelectorAll(`x-path[pattern][name]`);
             },
 
             /*
