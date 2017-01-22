@@ -78,12 +78,28 @@ The order of the `x-path` children matters and will return the first match.
                 },
 
                 /*
-                 * Used to mock the location pathname. Should only be used for demo purposes.
+                 * Used to mock location pathname. Should only be used for demo purposes.
                  */
                 _mockLocationPathname: {
                     type: String,
                     value: null
-                }
+                },
+
+                /*
+                 * Used to mock location search. Should only be used for demo purposes.
+                 */
+                _mockLocationSearch: {
+                    type: String,
+                    value: null
+                },
+
+                /*
+                 * Used to mock location hash. Should only be used for demo purposes.
+                 */
+                _mockLocationHash: {
+                    type: String,
+                    value: null
+                },
 
             },
 
@@ -205,8 +221,8 @@ The order of the `x-path` children matters and will return the first match.
                 const currentPathname = paths[this.route.index];
                 const parentPathname = paths.slice(0, this.route.index).join(``);
                 const pathname = this._locationPathName();
-                const queryObject = this._queryStringToObject(window.location.search.substring(1));
-                const fragment = window.decodeURIComponent(window.location.hash.substring(1));
+                const queryObject = this._queryStringToObject(this._locationSearch());
+                const fragment = this._locationHash();
                 const name = this._findChildNameForPath(children, currentPath);
                 const active = (`${parentPathname}${currentPathname}` === pathname);
                 const state = (active) ? window.history.state : null;
@@ -238,7 +254,7 @@ The order of the `x-path` children matters and will return the first match.
                 decodedQueryString.split(`&`).forEach((q) => {
                     const parameter = q.split(`=`);
                     if (parameter.length === 2) {
-                        queryObject[window.decodeURIComponent(parameter[0])] = window.decodeURIComponent(parameter[1]);
+                        queryObject[parameter[0]] = parameter[1];
                     }
                 });
                 return queryObject;
@@ -303,6 +319,28 @@ The order of the `x-path` children matters and will return the first match.
                     return window.decodeURIComponent(window.location.pathname);
                 }
             },
+
+            /*
+             * Returns the window.location.search unless `_mockLocationSearch` has a value.
+             */
+            _locationSearch: function() {
+                if (this._mockLocationSearch) {
+                    return window.decodeURIComponent(this._mockLocationSearch.substring(1));
+                } else {
+                    return window.decodeURIComponent(window.location.search.substring(1));
+                }
+            },
+
+            /*
+             * Returns the window.location.hash unless `_mockLocationHash` has a value.
+             */
+            _locationHash: function() {
+                if (this._mockLocationHash) {
+                    return window.decodeURIComponent(this._mockLocationHash.substring(1));
+                } else {
+                    return window.decodeURIComponent(window.location.hash.substring(1));
+                }
+            }
 
         });
 
