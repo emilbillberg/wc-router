@@ -223,15 +223,15 @@ The order of the `x-path` children matters and will return the first match.
              * Transforms the query string to an object.
              */
             _queryStringToObject: function (queryString) {
-                let querybject = {};
+                let queryObject = {};
                 const decodedQueryString = window.decodeURIComponent(queryString);
                 decodedQueryString.split(`&`).forEach((q) => {
                     const parameter = q.split(`=`);
                     if (parameter.length === 2) {
-                        querybject[window.decodeURIComponent(parameter[0])] = window.decodeURIComponent(parameter[1]);
+                        queryObject[window.decodeURIComponent(parameter[0])] = window.decodeURIComponent(parameter[1]);
                     }
                 });
-                return querybject;
+                return queryObject;
             },
 
             /*
