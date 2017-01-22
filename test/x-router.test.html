@@ -183,6 +183,32 @@
 
         });
 
+        suite('location search', function () {
+
+          test('returns mock location search if defined', function () {
+            element._mockLocationSearch = '?firstName=John';
+            assert.equal(element._locationSearch(), 'firstName=John');
+          });
+
+          test('returns window location search when mock location is NOT defined', function () {
+            assert.equal(element._locationSearch(), window.location.search.substring(1));
+          });
+
+        });
+
+        suite('location hash', function () {
+
+          test('returns mock location hash if defined', function () {
+            element._mockLocationHash = '#hash';
+            assert.equal(element._locationHash(), 'hash');
+          });
+
+          test('returns window location hash when mock location is NOT defined', function () {
+            assert.equal(element._locationHash(), window.location.hash.substring(1));
+          });
+
+        });
+
       });
 
     </script>
