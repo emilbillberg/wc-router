@@ -17,9 +17,9 @@
 
 <body>
 
-  <test-fixture id="element">
+  <test-fixture id="mainRouter">
     <template>
-      <x-router>
+      <x-router main>
         <x-path name="home" pattern="^/$"></x-path>
         <x-path name="signup" pattern="^/signup$"></x-path>
         <x-path name="schedule" pattern="^/schedule$"></x-path>
@@ -30,26 +30,34 @@
 
   <script>
 
-      suite('x-router', function () {
+      suite('main x-router', function () {
         
-        let element;
+        let mainRouter;
         setup(function () {
-          element = fixture('element');
+          mainRouter = fixture('mainRouter');
         });
 
-        test('instantiating the element works', function () {
-          assert.equal(element.is, 'x-router');
+        suite('initial setup', function () {
+
+          test('has correct tag name', function () {
+            assert.equal(mainRouter.is, 'x-router');
+          });
+
+          test('is main', function () {
+            assert.equal(mainRouter.main, true);
+          });
+
         });
 
         suite('finds all children', function () {
 
           test('length of children is 4', function () {
-            let children = element._getRouteChildren();
+            let children = mainRouter._getRouteChildren();
             assert.equal(children.length, 4);
           });
 
-          test('second child is singup', function () {
-            let children = element._getRouteChildren();
+          test('second child is signup', function () {
+            let children = mainRouter._getRouteChildren();
             assert.equal(children[1].getAttribute('name'), 'signup');
           });
 
@@ -59,27 +67,33 @@
 
           test('two query parameter works', function () {
             let search = 'firstName=James&lastName=Bond';
-            let object = element._queryStringToObject(search);
+            let object = mainRouter._queryStringToObject(search);
             assert.equal(object.firstName, 'James');
             assert.equal(object.lastName, 'Bond');
           });
 
           test('special character works', function () {
             let search = 'firstName=Göran';
-            let object = element._queryStringToObject(search);
+            let object = mainRouter._queryStringToObject(search);
             assert.equal(object.firstName, 'Göran');
           });
 
           test('url encoded character works', function () {
             let search = 'firstName=James%20Bond';
-            let object = element._queryStringToObject(search);
+            let object = mainRouter._queryStringToObject(search);
             assert.equal(object.firstName, 'James Bond');
           });
 
           test('empty string returns undefined variable', function () {
             let search = '';
-            let object = element._queryStringToObject(search);
+            let object = mainRouter._queryStringToObject(search);
             assert.equal(object.firstName, undefined);
+          });
+
+          test('missing value returns empty string', function () {
+            let search = 'firstName=';
+            let object = mainRouter._queryStringToObject(search);
+            assert.equal(object.firstName, '');
           });
 
         });
@@ -87,27 +101,27 @@
         suite('find child name for path', function () {
 
           test('finds "home"', function () {
-            let name = element._findChildNameForPath(element.children, '/');
+            let name = mainRouter._findChildNameForPath(mainRouter.children, '/');
             assert.equal(name, 'home');
           });
 
           test('finds "signup"', function () {
-            let name = element._findChildNameForPath(element.children, '/signup');
+            let name = mainRouter._findChildNameForPath(mainRouter.children, '/signup');
             assert.equal(name, 'signup');
           });
 
           test('finds "schedule"', function () {
-            let name = element._findChildNameForPath(element.children, '/schedule');
+            let name = mainRouter._findChildNameForPath(mainRouter.children, '/schedule');
             assert.equal(name, 'schedule');
           });
 
           test('finds "info"', function () {
-            let name = element._findChildNameForPath(element.children, '/info');
+            let name = mainRouter._findChildNameForPath(mainRouter.children, '/info');
             assert.equal(name, 'info');
           });
 
-          test('does not find "unknown"', function () {
-            let name = element._findChildNameForPath(element.children, '/unknown');
+          test('does not find "unknown" and return null', function () {
+            let name = mainRouter._findChildNameForPath(mainRouter.children, '/unknown');
             assert.equal(name, null);
           });
 
@@ -116,19 +130,19 @@
         suite('split path name', function () {
 
           test('splits "/" correctly', function () {
-            let paths = element._splitPathname('/');
+            let paths = mainRouter._splitPathname('/');
             assert.equal(paths[0], '/');
           });
 
           test('splits longer path correctly', function () {
-            let paths = element._splitPathname('/one/two/three');
+            let paths = mainRouter._splitPathname('/one/two/three');
             assert.equal(paths[0], '/one');
             assert.equal(paths[1], '/two');
             assert.equal(paths[2], '/three');
           });
 
           test('has correct length of paths array', function () {
-            let paths = element._splitPathname('/one/two/three');
+            let paths = mainRouter._splitPathname('/one/two/three');
             assert.equal(paths.length, 3);
           });
 
@@ -140,7 +154,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 0;
-            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
+            let newPathName = mainRouter._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, '/myRoute');
           });
 
@@ -148,7 +162,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 1;
-            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
+            let newPathName = mainRouter._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, '/one/myRoute');
           });
 
@@ -156,7 +170,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 2;
-            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
+            let newPathName = mainRouter._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, '/one/two/myRoute');
           });
 
@@ -164,7 +178,7 @@
             const paths = ['/one', '/two', 'three'];
             const pathName = ['/myRoute'];
             const index = 3;
-            let newPathName = element._currentPathnameFromPaths(paths, pathName, index);
+            let newPathName = mainRouter._currentPathnameFromPaths(paths, pathName, index);
             assert.equal(newPathName, null);
           });
 
@@ -173,12 +187,12 @@
         suite('location pathname', function () {
 
           test('returns mock location pathname if defined', function () {
-            element._mockLocationPathname = '/myMockPathname';
-            assert.equal(element._locationPathName(), '/myMockPathname');
+            mainRouter._mockLocationPathname = '/myMockPathname';
+            assert.equal(mainRouter._locationPathName(), '/myMockPathname');
           });
 
           test('returns window location pathname when mock location is NOT defined', function () {
-            assert.equal(element._locationPathName(), window.location.pathname);
+            assert.equal(mainRouter._locationPathName(), window.location.pathname);
           });
 
         });
@@ -186,12 +200,12 @@
         suite('location search', function () {
 
           test('returns mock location search if defined', function () {
-            element._mockLocationSearch = '?firstName=John';
-            assert.equal(element._locationSearch(), 'firstName=John');
+            mainRouter._mockLocationSearch = '?firstName=John';
+            assert.equal(mainRouter._locationSearch(), 'firstName=John');
           });
 
           test('returns window location search when mock location is NOT defined', function () {
-            assert.equal(element._locationSearch(), window.location.search.substring(1));
+            assert.equal(mainRouter._locationSearch(), window.location.search.substring(1));
           });
 
         });
@@ -199,12 +213,12 @@
         suite('location hash', function () {
 
           test('returns mock location hash if defined', function () {
-            element._mockLocationHash = '#hash';
-            assert.equal(element._locationHash(), 'hash');
+            mainRouter._mockLocationHash = '#hash';
+            assert.equal(mainRouter._locationHash(), 'hash');
           });
 
           test('returns window location hash when mock location is NOT defined', function () {
-            assert.equal(element._locationHash(), window.location.hash.substring(1));
+            assert.equal(mainRouter._locationHash(), window.location.hash.substring(1));
           });
 
         });
@@ -212,60 +226,60 @@
         suite('route-change event', function () {
 
           test('dispatch an event', function (done) {
-            element.addEventListener('route-change', (event) => {
+            mainRouter.addEventListener('route-change', (event) => {
               done();
             });
-            element.push('/signup', null);
+            mainRouter.push('/signup', null);
           });
 
           test('returns correct name in event', function (done) {
-            element.addEventListener('route-change', (event) => {
+            mainRouter.addEventListener('route-change', (event) => {
               assert.equal(event.detail.name, 'signup');
               done();
             });
-            element.push('/signup', null);
+            mainRouter.push('/signup', null);
           });
 
           test('returns correct current pathname in event', function (done) {
-            element.addEventListener('route-change', (event) => {
+            mainRouter.addEventListener('route-change', (event) => {
               assert.equal(event.detail.currentPathname, '/category');
               done();
             });
-            element.push('/category/shoes', null);
+            mainRouter.push('/category/shoes', null);
           });
 
           test('returns correct pathname in event', function (done) {
-            element.addEventListener('route-change', (event) => {
+            mainRouter.addEventListener('route-change', (event) => {
               assert.equal(event.detail.pathname, '/category/shoes');
               done();
             });
-            element.push('/category/shoes', null);
+            mainRouter.push('/category/shoes', null);
           });
 
           test('returns correct parent pathname in event', function (done) {
-            element.addEventListener('route-change', (event) => {
+            mainRouter.addEventListener('route-change', (event) => {
               assert.equal(event.detail.parentPathname, '');
               done();
             });
-            element.push('/category/shoes', null);
+            mainRouter.push('/category/shoes', null);
           });
 
           test('returns correct name in event', function (done) {
-            element.addEventListener('route-change', (event) => {
+            mainRouter.addEventListener('route-change', (event) => {
               assert.equal(event.detail.hash, 'hash');
               done();
             });
-            element._mockLocationHash = '#hash';
-            element.push('/', null);
+            mainRouter._mockLocationHash = '#hash';
+            mainRouter.push('/', null);
           });
 
           test('returns correct query object in event', function (done) {
-            element.addEventListener('route-change', (event) => {
+            mainRouter.addEventListener('route-change', (event) => {
               assert.equal(event.detail.queryObject.firstName, 'John');
               done();
             });
-            element._mockLocationSearch = '?firstName=John';
-            element.push('/', null);
+            mainRouter._mockLocationSearch = '?firstName=John';
+            mainRouter.push('/', null);
           });
 
         });
