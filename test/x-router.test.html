@@ -28,6 +28,14 @@
     </template>
   </test-fixture>
 
+  <test-fixture id="subrouter">
+    <template>
+      <x-router>
+        <x-path name="shoes" pattern="^/shoes$"></x-path>
+      </x-router>
+    </template>
+  </test-fixture>
+
   <script>
 
       suite('main x-router', function () {
@@ -269,8 +277,7 @@
               assert.equal(event.detail.hash, 'hash');
               done();
             });
-            mainRouter._mockLocationHash = '#hash';
-            mainRouter.push('/', null);
+            mainRouter.push('/category#hash', null);
           });
 
           test('returns correct query object in event', function (done) {
@@ -278,8 +285,81 @@
               assert.equal(event.detail.queryObject.firstName, 'John');
               done();
             });
-            mainRouter._mockLocationSearch = '?firstName=John';
-            mainRouter.push('/', null);
+            mainRouter.push('/category?firstName=John', null);
+          });
+
+          test('returns correct subroute index', function (done) {
+            mainRouter.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.subroute.index, 1);
+              done();
+            });
+            mainRouter.push('/category', null);
+          });
+
+        });
+
+      });
+
+      suite('subrouter x-router', function () {
+        
+        let mainRouter;
+        let subrouter;
+        setup(function () {
+          mainRouter = fixture('mainRouter');
+          subrouter = fixture('subrouter');
+          mainRouter.addEventListener('route-change', (event) => {
+              subrouter.route = event.detail.subroute;
+          });
+        });
+
+        suite('initial setup', function () {
+
+          test('is NOT main', function () {
+            assert.equal(subrouter.main, false);
+          });
+
+        });
+
+        suite('route-change event', function () {
+
+          test('returns correct subroute index', function (done) {
+            subrouter.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.subroute.index, 2);
+              done();
+            });
+            mainRouter.push('/category/shoes', null);
+          });
+
+          test('returns correct current pathname', function (done) {
+            subrouter.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.currentPathname, '/shoes');
+              done();
+            });
+            mainRouter.push('/category/shoes', null);
+          });
+
+          test('returns correct parent pathname', function (done) {
+            subrouter.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.parentPathname, '/category');
+              done();
+            });
+            mainRouter.push('/category/shoes', null);
+          });
+
+          test('returns correct pathname', function (done) {
+            subrouter.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.pathname, '/category/shoes');
+              done();
+            });
+            mainRouter.push('/category/shoes', null);
+          });
+
+          test('returns correct name', function (done) {
+            subrouter.addEventListener('route-change', (event) => {
+              assert.equal(event.detail.name, 'shoes');
+              done();
+            });
+            mainRouter.push('/category/shoes', null);
           });
 
         });
