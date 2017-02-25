@@ -1,5 +1,3 @@
-<link rel="import" href="../polymer/polymer.html">
-
 <!--
 `wc-router`
 
@@ -30,326 +28,270 @@ The order of the `wc-path` children matters and will return the first match.
 @demo demo/index.html 
 -->
 
-<dom-module id="wc-router">
 
-    <script>
+<script>
 
-        Polymer({
+    class WCRouter extends HTMLElement {
 
-            /*
-             * Fired when the route changes. Detail object contains:
-             *  - `currentPathname` - the current pathname for the route.
-             *  - `parentPathname` - the parent pathname for the route.
-             *  - `pathname` - the full pathname (window.location.pathname).
-             *  - `queryObject` - the query parameters as an object.
-             *  - `hash` - the hash part of the url.
-             *  - `name` - the name of the route defined in `wc-path` element. If no match it will be null.
-             *  - `state` - the `window.history.state` object for the route. Will only contain a state object if the route is `active`.
-             *  - `active` - a boolean. Will be true if route exists and the route does not have a subroute.
-             *  - `subroute` - an object that should be passed to a subroute.
-             * @event route-change
-             */
+        /*
+         * Fired when the route changes. Detail object contains:
+         *  - `currentPathname` - the current path for the route.
+         *  - `parentPathname` - the parent path for the route.
+         *  - `pathname` - the full path (window.location.pathName).
+         *  - `queryObject` - the query parameters as an object.
+         *  - `hash` - the hash part of the url.
+         *  - `name` - the name of the route defined in `wc-path` element. If no match it will be null.
+         *  - `state` - the `window.history.state` object for the route. Will only contain a state object if the route is `active`.
+         *  - `active` - a boolean. Will be true if route exists and the route does not have a subroute.
+         *  - `subroute` - an object that should be passed to a subroute.
+         * @event route-change
+         */
 
-            is: 'wc-router',
+        constructor() {
+            super();
+            this._route = { index: 0 };
+            console.log(`contructor`);
+        }
 
-            properties: {
+        static get is() {
+            return `wc-router`;
+        }
 
-                /*
-                 * Defines the main or root router that is at the top of the hierarchy and is not a subroute. 
-                 * Only the top router should set this attribute to true.
-                 */
-                main: {
-                    type: Boolean,
-                    value: false,
-                },
+        // static get observedAttributes() {
+        //     return ['route'];
+        // }
 
-                /*
-                 * A subroute object usually passed in from a router higher up in the hierarchy. A router with the `main`
-                 * attribute will never have a subroute object passed in; should only be used for subroutes.
-                 */
-                route: {
-                    type: Object,
-                    observer: `_observeRoute`,
-                    value: function () {
-                        return {
-                            index: 0
-                        }
-                    }
-                },
-
-                /*
-                 * Used to mock location pathname. Should only be used for demo purposes.
-                 */
-                _mockLocationPathname: {
-                    type: String,
-                    value: null
-                },
-
-                /*
-                 * Used to mock location search. Should only be used for demo purposes.
-                 */
-                _mockLocationSearch: {
-                    type: String,
-                    value: null
-                },
-
-                /*
-                 * Used to mock location hash. Should only be used for demo purposes.
-                 */
-                _mockLocationHash: {
-                    type: String,
-                    value: null
-                },
-
-            },
-
-            /*
-             * Life cycle. Add event listeners for main router.
-             */
-            attached: function () {
-                if (this.main) {
-                    this.listen(window, 'popstate', '_popStateEvent');
-                    this.listen(document.body, 'click', '_clickEvent');
-                    this._dispatchRouteChangeEvent();
-                }
-            },
-
-            /*
-             * Life cycle. Remove event listeners for main router.
-             */
-            detached: function () {
-                if (this.main) {
-                    this.unlisten(window, 'popstate', '_popStateEvent');
-                    this.unlisten(document.body, 'click', '_clickEvent');
-                }
-            },
-
-            /*
-             * Handle the pop state event.
-             */
-            _popStateEvent: function () {
+        connectedCallback() {
+            if (this.hasAttribute(`main`)) {
+                window.addEventListener('popstate', this._popStateEvent.bind(this));
+                document.body.addEventListener('click', this._clickEvent.bind(this));
                 this._dispatchRouteChangeEvent();
-            },
+            }
+        }
 
-            /*
-             * Handle the global click event. This is a click event on the body (necessary evil) that hijacks the click event
-             * for all anchor tags. Tries to out early if it can.
-             */
-            _clickEvent: function (event) {
-                if (event.defaultPrevented) {
-                    return;
-                }
+        disconnectedCallback() {
+            if (this.hasAttribute(`main`)) {
+                window.removeEventListener('popstate', this._popStateEvent);
+                document.body.removeEventListener('click', this._clickEvent);
+            }
+        }
 
-                const eventPath = Polymer.dom(event).path;
-                let anchor = null;
-                for (let i = 0; i < eventPath.length; i++) {
-                    let element = eventPath[i];
-                    if (element.tagName === `A` && element.href) {
-                        anchor = element;
-                        break;
-                    }
-                }
+        // attributeChangedCallback(attrName, oldVal, newVal) {
+        //     console.log(attrName);
+        //     if (attrName === `route`) {
+        //         this.route = JSON.parse(newVal); 
+        //     }
+        // }
 
-                if (!anchor) {
-                    return;
-                }
+        /*
+         * Handle the pop state event.
+         */
+        _popStateEvent() {
+            this._dispatchRouteChangeEvent();
+        }
 
-                if ((anchor.target === `_blank`) || (anchor.target === `_top`) || (anchor.target === `_parent`)) {
-                    return;
-                }
+        /*
+         * Handle the global click event. This is a click event on the body (necessary evil) that hijacks the click event
+         * for all anchor tags. Tries to out early if it can.
+         */
+        _clickEvent(event) {
+            if (event.defaultPrevented) {
+                return;
+            }
 
-                if (anchor.href.startsWith(`mailto:`) || anchor.href.startsWith(`tel:`)) {
-                    return;
-                }
-
-                event.preventDefault();
-
-                if (anchor.href === window.location.href) {
-                    return;
-                }
-
-                this._go(anchor.href, null, anchor.hasAttribute(`replace`));
-            },
-
-            /*
-             * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
-             * Will use history.pushState to navigate.
-             */
-            push: function (pathname, state) {
-                this._go(pathname, state, false);
-            },
-
-            /*
-             * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
-             * Will use history.replaceState to navigate.
-             */
-            replace: function (pathname, state) {
-                this._go(pathname, state, true);
-            },
-
-            /*
-             * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
-             * A truthy replace parameter will use history.replaceState instead of history.pushState to navigate.
-             */
-            _go: function (pathname, state, replace) {
-                const paths = this._splitPathname(this._locationPathName());
-                const newPathname = this._currentPathnameFromPaths(paths, pathname, this.route.index);
-                if (newPathname) {
-                    if (replace) {
-                        window.history.replaceState(state, ``, newPathname);
-                    } else {
-                        window.history.pushState(state, ``, newPathname);
-                    }
-                    this._dispatchRouteChangeEvent();
-                } else {
-                    console.warn(`Route is outside its index`);
-                }
-            },
-
-            /*
-             * Observe the subroute object and respond to changes.
-             */
-            _observeRoute: function (route) {
-                if (route.index !== 0) {
-                    const paths = this._splitPathname(this._locationPathName());
-                    if (route.index < paths.length) {
-                        this._dispatchRouteChangeEvent();
-                    }
-                }
-            },
-
-            /*
-             * Fires event `route-change` with information about current route.
-             */
-            _dispatchRouteChangeEvent: function () {
-                const children = this._getRouteChildren();
-                const paths = this._splitPathname(this._locationPathName());
-                const currentPathname = paths[this.route.index];
-                const parentPathname = paths.slice(0, this.route.index).join(``);
-                const pathname = this._locationPathName();
-                const queryObject = this._queryStringToObject(this._locationSearch());
-                const hash = this._locationHash();
-                const name = this._findChildNameForPath(children, currentPathname);
-                const active = (`${parentPathname}${currentPathname}` === pathname);
-                const state = (active) ? window.history.state : null;
-                const subroute = {
-                    index: this.route.index + 1
-                };
-
-                const detail = {
-                    currentPathname: currentPathname,
-                    parentPathname: parentPathname,
-                    pathname: pathname,
-                    queryObject: queryObject,
-                    hash: hash,
-                    name: name,
-                    state: state,
-                    active: active,
-                    subroute: subroute
-                };
-
-                this.dispatchEvent(new CustomEvent('route-change', {detail: detail}), {bubbles: true});
-            },
-
-            /*
-             * Transforms the query string to an object.
-             */
-            _queryStringToObject: function (queryString) {
-                let queryObject = {};
-                const decodedQueryString = window.decodeURIComponent(queryString);
-                decodedQueryString.split(`&`).forEach((q) => {
-                    const parameter = q.split(`=`);
-                    if (parameter.length === 2) {
-                        queryObject[parameter[0]] = parameter[1];
-                    }
-                });
-                return queryObject;
-            },
-
-            /*
-             * Finds all child elements with selector `wc-path[pattern][name]`.
-             */
-            _getRouteChildren: function () {
-                return this.querySelectorAll(`wc-path[pattern][name]`);
-            },
-
-            /*
-             * Create the pathname for the current route. Will not change the pathname for a route higher up 
-             * in the route hierarchy.
-             */
-            _currentPathnameFromPaths: function (paths, pathName, index) {
-                if (index < paths.length) {
-                    const parentPaths = paths.slice(0, index);
-                    parentPaths.push(pathName);
-                    return parentPaths.join(``);
-                } else {
-                    return null;
-                }
-            },
-
-            /*
-             * Finds the name of the path by mathing the child's regex pattern to the path.
-             */
-            _findChildNameForPath: function (children, path) {
-                for (let i = 0; i < children.length; i++) {
-                    const child = children[i];
-                    const pattern = child.getAttribute(`pattern`);
-                    const regex = new RegExp(pattern);
-                    if (regex.test(path)) {
-                        return child.getAttribute(`name`);
-                    }
-                }
-                return null;
-            },
-
-            /*
-             * Splits the pathname to an array.
-             */
-            _splitPathname: function (pathname) {
-                if (pathname === `/`) {
-                    return [`/`];
-                } else {
-                    return pathname.split(`/`)
-                        .filter((pathname) => { return pathname !== ``; })
-                        .map((pathname => { return `/${pathname}` }));
-                }
-            },
-
-            /*
-             * Returns the window.location.pathname unless `_mockLocationPathname` has a value.
-             */
-            _locationPathName: function() {
-                if (this._mockLocationPathname) {
-                    return window.decodeURIComponent(this._mockLocationPathname);
-                } else {
-                    return window.decodeURIComponent(window.location.pathname);
-                }
-            },
-
-            /*
-             * Returns the window.location.search unless `_mockLocationSearch` has a value.
-             */
-            _locationSearch: function() {
-                if (this._mockLocationSearch) {
-                    return window.decodeURIComponent(this._mockLocationSearch.substring(1));
-                } else {
-                    return window.decodeURIComponent(window.location.search.substring(1));
-                }
-            },
-
-            /*
-             * Returns the window.location.hash unless `_mockLocationHash` has a value.
-             */
-            _locationHash: function() {
-                if (this._mockLocationHash) {
-                    return window.decodeURIComponent(this._mockLocationHash.substring(1));
-                } else {
-                    return window.decodeURIComponent(window.location.hash.substring(1));
+            const eventPath = event.composedPath();
+            let anchor = null;
+            for (let i = 0; i < eventPath.length; i++) {
+                let element = eventPath[i];
+                if (element.tagName === `A` && element.href) {
+                    anchor = element;
+                    break;
                 }
             }
 
-        });
+            if (!anchor) {
+                return;
+            }
 
-    </script>
+            if ((anchor.target === `_blank`) || (anchor.target === `_top`) || (anchor.target === `_parent`)) {
+                return;
+            }
 
-</dom-module>
+            if (anchor.href.startsWith(`mailto:`) || anchor.href.startsWith(`tel:`)) {
+                return;
+            }
+
+            event.preventDefault();
+
+            if (anchor.href === window.location.href) {
+                return;
+            }
+
+            this._go(anchor.href, null, anchor.hasAttribute(`replace`));
+        }
+
+        /*
+         * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
+         * Will use history.pushState to navigate.
+         */
+        push(pathname, state) {
+            this._go(pathname, state, false);
+        }
+
+        /*
+         * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
+         * Will use history.replaceState to navigate.
+         */
+        replace(pathname, state) {
+            this._go(pathname, state, true);
+        }
+
+        /*
+         * Trigger a route change. Will only trigger a route change for its own route and subroutes not a parents route.
+         * A truthy replace parameter will use history.replaceState instead of history.pushState to navigate.
+         */
+        _go(pathname, state, replace) {
+            const paths = this._splitPathname(this._locationPathName());
+            const newPathname = this._currentPathnameFromPaths(paths, pathname, this.route.index);
+            if (newPathname) {
+                if (replace) {
+                    window.history.replaceState(state, ``, newPathname);
+                } else {
+                    window.history.pushState(state, ``, newPathname);
+                }
+                this._dispatchRouteChangeEvent();
+            } else {
+                console.warn(`Route is outside its index`);
+            }
+        }
+
+        /*
+         * Observe the subroute object and respond to changes.
+         */
+        set route(route) {
+            this._route = route;
+            if (this._route.index !== 0) {
+                const paths = this._splitPathname(this._locationPathName());
+                if (this._route.index < paths.length) {
+                    this._dispatchRouteChangeEvent();
+                }
+            }
+        }
+
+        /*
+         * Returns the route.
+         */
+        get route() {
+            return this._route;
+        }
+
+        /*
+         * Fires event `route-change` with information about current route.
+         */
+        _dispatchRouteChangeEvent() {
+            const children = this._getRouteChildren();
+            const paths = this._splitPathname(this._locationPathName());
+            const currentPathname = paths[this.route.index];
+            const parentPathname = paths.slice(0, this.route.index).join(``);
+            const pathname = window.decodeURIComponent(this._locationPathName());
+            const queryObject = this._queryStringToObject(window.location.search.substring(1));
+            const hash = window.decodeURIComponent(window.location.hash.substring(1));
+            const name = this._findChildNameForPath(children, currentPathname);
+            const active = (`${parentPathname}${currentPathname}` === pathname);
+            const state = (active) ? window.history.state : null;
+            const subroute = {
+                index: this.route.index + 1
+            };
+
+            const detail = {
+                currentPathname: currentPathname,
+                parentPathname: parentPathname,
+                pathname: pathname,
+                queryObject: queryObject,
+                hash: hash,
+                name: name,
+                state: state,
+                active: active,
+                subroute: subroute
+            };
+
+            console.log(`route changed`, detail);
+            this.dispatchEvent(new CustomEvent('route-change', {detail: detail}, {bubbles: true, composed: true}))
+        }
+
+        /*
+         * Transforms the query string to an object.
+         */
+        _queryStringToObject(queryString) {
+            let queryObject = {};
+            const decodedQueryString = window.decodeURIComponent(queryString);
+            decodedQueryString.split(`&`).forEach((q) => {
+                const parameter = q.split(`=`);
+                if (parameter.length === 2) {
+                    queryObject[window.decodeURIComponent(parameter[0])] = window.decodeURIComponent(parameter[1]);
+                }
+            });
+            return queryObject;
+        }
+
+        /*
+         * Finds all child elements with selector `wc-path[pattern][name]`.
+         */
+        _getRouteChildren() {
+            return this.querySelectorAll(`wc-path[pattern][name]`);
+        }
+
+        /*
+         * Create the pathname for the current route. Will not change the pathname for a route higher up
+         * in the route hierarchy.
+         */
+        _currentPathnameFromPaths(paths, pathName, index) {
+            if (index < paths.length) {
+                const parentPaths = paths.slice(0, index);
+                parentPaths.push(pathName);
+                return parentPaths.join(``);
+            } else {
+                return null;
+            }
+        }
+
+        /*
+         * Finds the name of the path by mathing the child's regex pattern to the path.
+         */
+        _findChildNameForPath(children, path) {
+            for (let i = 0; i < children.length; i++) {
+                const child = children[i];
+                const pattern = child.getAttribute(`pattern`);
+                const regex = new RegExp(pattern);
+                if (regex.test(path)) {
+                    return child.getAttribute(`name`);
+                }
+            }
+            return null;
+        }
+
+        /*
+         * Splits the pathname to an array.
+         */
+        _splitPathname(pathname) {
+            if (pathname === `/`) {
+                return [`/`];
+            } else {
+                return window.decodeURIComponent(pathname).split(`/`)
+                    .filter((pathname) => { return pathname !== ``; })
+                    .map((pathname => { return `/${pathname}` }));
+            }
+        }
+
+        /*
+         * Returns the window.location.pathname unless `_mockLocationPathname` has a value.
+         */
+        _locationPathName() {
+            return (this._mockLocationPathname) ? this._mockLocationPathname : window.location.pathname;
+        }
+
+    }
+
+    window.customElements.define(WCRouter.is, WCRouter);
+
+</script>
