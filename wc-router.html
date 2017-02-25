@@ -105,7 +105,8 @@ The order of the `wc-path` children matters and will return the first match.
                 return;
             }
 
-            if (anchor.href.startsWith(`mailto:`) || anchor.href.startsWith(`tel:`)) {
+            const url = new URL(anchor.href)
+            if ((url.protocol !== `http:`) && (url.protocol !== `https:`)) {
                 return;
             }
 
