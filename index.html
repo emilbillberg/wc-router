@@ -13,15 +13,29 @@
     
         button {
             display: block;
+            padding: 8px;
+            margin: 0;
+            margin-bottom: 8px;
         }
 
         a {
           display: block;
-          color: blue;
+          color: #000;
         }
 
         a:hover {
           color: red;
+        }
+
+        .route-container {
+          display: flex;
+          justify-content: space-between;
+        }
+
+        .route-text {
+          flex-grow: 1;
+          flex-shrink: 0;
+          flex-basis: 50%;
         }
 
     </style>
@@ -42,25 +56,35 @@
         <wc-path name="404" pattern="^/.*$"></wc-path>
     </wc-router>
 
+    <h1>Demo & Debug</h1>
+    <div class="route-container">
+      <div class="route-text">
+        <h2>Route 1</h2>
+        <div id="route1Detail"></div>
+      </div>
+      <div class="route-text">
+        <h2>Route 2</h2>
+        <div id="route2Detail"></div>
+      </div>
+    </div>
+    
+
     <div>
+        <h3>Links</h3>
         <a href="/">/home</a>
         <a href="/about">/about</a>
-        <a href="/category/shoes">/categroy/shoes</a>
+        <a href="/category/shoes">/category/shoes</a>
         <a href="/category/shoes#nike">/category/shoes#nike</a>
         <a href="/category/shoes?name=nike">/category/shoes?name=nike</a>
         <a href="/category/shoes?name=adidas">/category/shoes?name=adidas</a>
         <a href="/category/jackets">/category/jackets</a>
-    </div>
-
-    <div>
-        <button id="button1">/about</button>
+        <a href="/about" target="_blank">/about _blank</a>
+        <a href="tel:070123456">tel:070123456</a>
+        <a href="mailto:wc-router@gmail.com">mailto:wc-router@gmail.com</a>
+        <h3>Router push() & replace()</h3>
+        <button id="button1">/category/shoes</button>
         <button id="button2">/category/sweaters</button>
     </div>
-
-    <h2>Route 1</h2>
-    <div id="route1Detail"></div>
-    <h2>Route 2</h2>
-    <div id="route2Detail"></div>
 
     <script>
         
@@ -87,8 +111,8 @@
             route2Detail.innerHTML = _detailText(event.detail);
         });
 
-        button1.addEventListener('click', event => route1.push('/about?name=emil'));
-        button2.addEventListener('click', event => route1.push('/about?name=danielle'));
+        button1.addEventListener('click', event => route1.push('/category/shoes'));
+        button2.addEventListener('click', event => route1.replace('/category/sweaters'));
 
         function _detailText(detail) {
           return text = `
