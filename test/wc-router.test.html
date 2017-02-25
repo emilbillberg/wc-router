@@ -232,7 +232,7 @@
             mainRouter.push('/category/shoes', null);
           });
 
-          test('returns correct name in event', function (done) {
+          test('returns correct hash in event', function (done) {
             mainRouter.addEventListener('route-change', (event) => {
               assert.equal(event.detail.hash, 'hash');
               done();
