@@ -111,11 +111,9 @@ The order of the `wc-path` children matters and will return the first match.
 
             event.preventDefault();
 
-            if (anchor.href === window.location.href) {
-                return;
-            }
-
-            this._go(anchor.href, null, anchor.hasAttribute(`replace`));
+            if (!this._isEqualHref(anchor.href)) {
+                this._go(anchor.href, null, anchor.hasAttribute(`replace`));
+            }       
         }
 
         /*
@@ -123,7 +121,9 @@ The order of the `wc-path` children matters and will return the first match.
          * Will use history.pushState to navigate.
          */
         push(pathname, state) {
-            this._go(pathname, state, false);
+            if (!this._isEqualHref(pathname)) {
+                this._go(pathname, state, false);
+            }
         }
 
         /*
@@ -131,7 +131,9 @@ The order of the `wc-path` children matters and will return the first match.
          * Will use history.replaceState to navigate.
          */
         replace(pathname, state) {
-            this._go(pathname, state, true);
+            if (!this._isEqualHref(pathname)) {
+                this._go(pathname, state, true);
+            }
         }
 
         /*
@@ -204,6 +206,18 @@ The order of the `wc-path` children matters and will return the first match.
             };
 
             this.dispatchEvent(new CustomEvent('route-change', {detail: detail}, {bubbles: true, composed: true}))
+        }
+
+        /**
+         * Checks if the href are the same. 
+         */
+        _isEqualHref(pathname) {
+            const url = new URL(pathname, `${window.location.protocol}${window.location.host}`); 
+            if (url.href === window.location.href) {
+                return true;
+            } else {
+                false;
+            }
         }
 
         /*
