@@ -4,19 +4,117 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
+    <base href="/">
     <title>wc-router</title>
 
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    
+    <style>
+    
+        button {
+            display: block;
+        }
 
-    <link rel="import" href="../iron-component-page/iron-component-page.html">
+        a {
+          display: block;
+          color: blue;
+        }
+
+        a:hover {
+          color: red;
+        }
+
+    </style>
+
   </head>
   <body>
-    <iron-component-page src="wc-router.html"></iron-component-page>
-
-    <wc-router>
-      <wc-path name="home" path="^/$"></wc-path>
-      <wc-path name="category" path="^/category$"></wc-path>
+    
+    
+    <wc-router id="route2">
+        <wc-path name="shoes" pattern="^/shoes$"></wc-path>
+        <wc-path name="jackets" pattern="^/jackets$"></wc-path>
     </wc-router>
 
+    <wc-router main id="route1">
+        <wc-path name="home" pattern="^/$"></wc-path>
+        <wc-path name="about" pattern="^/about$"></wc-path>
+        <wc-path name="category" pattern="^/category$"></wc-path>
+        <wc-path name="404" pattern="^/.*$"></wc-path>
+    </wc-router>
+
+    <div>
+        <a href="/">/home</a>
+        <a href="/about">/about</a>
+        <a href="/category/shoes">/categroy/shoes</a>
+        <a href="/category/shoes#nike">/category/shoes#nike</a>
+        <a href="/category/shoes?name=nike">/category/shoes?name=nike</a>
+        <a href="/category/shoes?name=adidas">/category/shoes?name=adidas</a>
+        <a href="/category/jackets">/category/jackets</a>
+    </div>
+
+    <div>
+        <button id="button1">/about</button>
+        <button id="button2">/category/sweaters</button>
+    </div>
+
+    <h2>Route 1</h2>
+    <div id="route1Detail"></div>
+    <h2>Route 2</h2>
+    <div id="route2Detail"></div>
+
+    <script>
+        
+        window.addEventListener('WebComponentsReady', event => {
+          console.log(`webcomponentsready`);
+        });
+
+        window.addEventListener('HTMLImportsLoaded', event => {
+          console.log(`HTMLImportsLoaded`);
+        });
+        
+        document.getElementById("route1").addEventListener('route-change', event => {
+            // console.log('Route one');
+            // console.log(event.detail);
+            // console.log('----------------');
+            document.getElementById("route2").route = event.detail.subroute;
+            const detail = event.detail;
+            const text = `
+              <b>currentPathname:</b> ${detail.currentPathname}<br>
+              <b>parentPathname":</b> ${detail.parentPathname}<br>
+              <b>pathname:</b> ${detail.pathname}<br>
+              <b>hash:</b> ${detail.hash}<br>
+              <b>queryObject:</b> ${JSON.stringify(detail.queryObject)}<br>
+              <b>name:</b> ${detail.name}<br>
+              <b>active:</b> ${detail.active}<br>
+            `;
+            route1Detail.innerHTML = text;
+        });
+
+        document.getElementById("route2").addEventListener('route-change', event => {
+            // console.log('Route two');
+            // console.log(event.detail);
+            // console.log('----------------');
+            const detail = event.detail;
+            const text = `
+              <b>currentPathname:</b> ${detail.currentPathname}<br>
+              <b>parentPathname":</b> ${detail.parentPathname}<br>
+              <b>pathname:</b> ${detail.pathname}<br>
+              <b>hash:</b> ${detail.hash}<br>
+              <b>queryObject:</b> ${JSON.stringify(detail.queryObject)}<br>
+              <b>name:</b> ${detail.name}<br>
+              <b>active:</b> ${detail.active}<br>
+            `;
+            route2Detail.innerHTML = text;
+        });
+
+        button1.addEventListener('click', event => route1.push('/about?name=emil'));
+        button2.addEventListener('click', event => route1.push('/about?name=danielle'));
+
+    </script>
+    
+    <!--<script src="bower_components/webcomponentsjs/webcomponents-lite.js"></script>-->
+    <link rel="import" href="wc-router.html">
+
   </body>
+
 </html>
