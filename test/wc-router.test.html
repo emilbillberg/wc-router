@@ -10,7 +10,6 @@
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
-
   <link rel="import" href="../wc-router.html">
 
 </head>
@@ -48,11 +47,11 @@
         suite('initial setup', function () {
 
           test('has correct tag name', function () {
-            assert.equal(mainRouter.is, 'wc-router');
+            assert.equal(WCRouter.is, 'wc-router');
           });
 
           test('is main', function () {
-            assert.equal(mainRouter.main, true);
+            assert.equal(mainRouter.hasAttribute('main'), true);
           });
 
         });
@@ -192,45 +191,6 @@
 
         });
 
-        suite('location pathname', function () {
-
-          test('returns mock location pathname if defined', function () {
-            mainRouter._mockLocationPathname = '/myMockPathname';
-            assert.equal(mainRouter._locationPathName(), '/myMockPathname');
-          });
-
-          test('returns window location pathname when mock location is NOT defined', function () {
-            assert.equal(mainRouter._locationPathName(), window.location.pathname);
-          });
-
-        });
-
-        suite('location search', function () {
-
-          test('returns mock location search if defined', function () {
-            mainRouter._mockLocationSearch = '?firstName=John';
-            assert.equal(mainRouter._locationSearch(), 'firstName=John');
-          });
-
-          test('returns window location search when mock location is NOT defined', function () {
-            assert.equal(mainRouter._locationSearch(), window.location.search.substring(1));
-          });
-
-        });
-
-        suite('location hash', function () {
-
-          test('returns mock location hash if defined', function () {
-            mainRouter._mockLocationHash = '#hash';
-            assert.equal(mainRouter._locationHash(), 'hash');
-          });
-
-          test('returns window location hash when mock location is NOT defined', function () {
-            assert.equal(mainRouter._locationHash(), window.location.hash.substring(1));
-          });
-
-        });
-
         suite('route-change event', function () {
 
           test('dispatch an event', function (done) {
@@ -315,7 +275,7 @@
         suite('initial setup', function () {
 
           test('is NOT main', function () {
-            assert.equal(subrouter.main, false);
+            assert.equal(subrouter.hasAttribute('main'), false);
           });
 
         });
