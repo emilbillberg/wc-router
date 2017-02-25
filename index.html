@@ -77,38 +77,30 @@
             // console.log(event.detail);
             // console.log('----------------');
             document.getElementById("route2").route = event.detail.subroute;
-            const detail = event.detail;
-            const text = `
-              <b>currentPathname:</b> ${detail.currentPathname}<br>
-              <b>parentPathname":</b> ${detail.parentPathname}<br>
-              <b>pathname:</b> ${detail.pathname}<br>
-              <b>hash:</b> ${detail.hash}<br>
-              <b>queryObject:</b> ${JSON.stringify(detail.queryObject)}<br>
-              <b>name:</b> ${detail.name}<br>
-              <b>active:</b> ${detail.active}<br>
-            `;
-            route1Detail.innerHTML = text;
+            route1Detail.innerHTML = _detailText(event.detail);;
         });
 
         document.getElementById("route2").addEventListener('route-change', event => {
             // console.log('Route two');
             // console.log(event.detail);
-            // console.log('----------------');
-            const detail = event.detail;
-            const text = `
-              <b>currentPathname:</b> ${detail.currentPathname}<br>
-              <b>parentPathname":</b> ${detail.parentPathname}<br>
-              <b>pathname:</b> ${detail.pathname}<br>
-              <b>hash:</b> ${detail.hash}<br>
-              <b>queryObject:</b> ${JSON.stringify(detail.queryObject)}<br>
-              <b>name:</b> ${detail.name}<br>
-              <b>active:</b> ${detail.active}<br>
-            `;
-            route2Detail.innerHTML = text;
+            // console.log('----------------');            
+            route2Detail.innerHTML = _detailText(event.detail);
         });
 
         button1.addEventListener('click', event => route1.push('/about?name=emil'));
         button2.addEventListener('click', event => route1.push('/about?name=danielle'));
+
+        function _detailText(detail) {
+          return text = `
+            <b>currentPathname:</b> ${detail.currentPathname}<br>
+            <b>parentPathname":</b> ${detail.parentPathname}<br>
+            <b>pathname:</b> ${detail.pathname}<br>
+            <b>hash:</b> ${detail.hash}<br>
+            <b>queryObject:</b> ${JSON.stringify(detail.queryObject)}<br>
+            <b>name:</b> ${detail.name}<br>
+            <b>active:</b> ${detail.active}<br>
+          `;
+        }
 
     </script>
     
