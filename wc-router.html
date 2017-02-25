@@ -50,16 +50,11 @@ The order of the `wc-path` children matters and will return the first match.
         constructor() {
             super();
             this._route = { index: 0 };
-            console.log(`contructor`);
         }
 
         static get is() {
             return `wc-router`;
         }
-
-        // static get observedAttributes() {
-        //     return ['route'];
-        // }
 
         connectedCallback() {
             if (this.hasAttribute(`main`)) {
@@ -75,13 +70,6 @@ The order of the `wc-path` children matters and will return the first match.
                 document.body.removeEventListener('click', this._clickEvent);
             }
         }
-
-        // attributeChangedCallback(attrName, oldVal, newVal) {
-        //     console.log(attrName);
-        //     if (attrName === `route`) {
-        //         this.route = JSON.parse(newVal); 
-        //     }
-        // }
 
         /*
          * Handle the pop state event.
@@ -215,7 +203,6 @@ The order of the `wc-path` children matters and will return the first match.
                 subroute: subroute
             };
 
-            console.log(`route changed`, detail);
             this.dispatchEvent(new CustomEvent('route-change', {detail: detail}, {bubbles: true, composed: true}))
         }
 
