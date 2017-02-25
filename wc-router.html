@@ -163,9 +163,7 @@ The order of the `wc-path` children matters and will return the first match.
             this._route = route;
             if (this._route.index !== 0) {
                 const paths = this._splitPathname(this._locationPathName());
-                if (this._route.index < paths.length) {
-                    this._dispatchRouteChangeEvent();
-                }
+                this._dispatchRouteChangeEvent();
             }
         }
 
@@ -182,7 +180,7 @@ The order of the `wc-path` children matters and will return the first match.
         _dispatchRouteChangeEvent() {
             const children = this._getRouteChildren();
             const paths = this._splitPathname(this._locationPathName());
-            const currentPathname = paths[this.route.index];
+            const currentPathname = paths[this.route.index] || null;
             const parentPathname = paths.slice(0, this.route.index).join(``);
             const pathname = window.decodeURIComponent(this._locationPathName());
             const queryObject = this._queryStringToObject(window.location.search.substring(1));
