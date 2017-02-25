@@ -1,36 +1,36 @@
 <link rel="import" href="../polymer/polymer.html">
 
 <!--
-`x-router`
+`wc-router`
 
-A modular lightweight client-side router built with webcomponents. The router is used by composing multiple x-router elements 
-that are each responsible for its own path. For example, the pathname: `/first/second` would require two x-router elements. One responsible 
-for the pathname `/first` and one responsible for the pathname `/second`. The x-router element responsible for the `/first` pathname is the 
-main router and require the attribute main. The x-router element responsible for the `/second` pathname is a subrouter. A subrouter has a route 
+A modular lightweight client-side router built with webcomponents. The router is used by composing multiple wc-router elements 
+that are each responsible for its own path. For example, the pathname: `/first/second` would require two wc-router elements. One responsible 
+for the pathname `/first` and one responsible for the pathname `/second`. The wc-router element responsible for the `/first` pathname is the 
+main router and require the attribute main. The wc-router element responsible for the `/second` pathname is a subrouter. A subrouter has a route 
 property that the previous router has to set. Each router fires the event `route-change` every time the router's property changes. 
 Please look in the api reference for more information about the `route-change` event.
 
-Normally the x-router element takes a number of child elements called x-path, although they are not required. If a x-path element is 
+Normally the wc-router element takes a number of child elements called wc-path, although they are not required. If a wc-path element is 
 added as a child they require two attributes: `pattern` and `name`. Pattern takes a regex string used to match the route's pathname. If the 
 pattern matches the `route-change` event will contain the `name` attribute. If none of the patterns match the name property will be null.
-The order of the `x-path` children matters and will return the first match.
+The order of the `wc-path` children matters and will return the first match.
 
 ```
-<x-router main>
-    <x-path name="home" pattern="^/$"></x-path>
-    <x-path name="category" pattern="^/category$"></x-path>
-</x-router>
+<wc-router main>
+    <wc-path name="home" pattern="^/$"></wc-path>
+    <wc-path name="category" pattern="^/category$"></wc-path>
+</wc-router>
 
-<x-router route="[[subroute]]">
-    <x-path name="clothes" pattern="^/clothes$"></x-path>
-    <x-path name="shoes" pattern="^/shoes$"></x-path>
-</x-router>
+<wc-router route="[[subroute]]">
+    <wc-path name="clothes" pattern="^/clothes$"></wc-path>
+    <wc-path name="shoes" pattern="^/shoes$"></wc-path>
+</wc-router>
 ```
 
 @demo demo/index.html 
 -->
 
-<dom-module id="x-router">
+<dom-module id="wc-router">
 
     <script>
 
@@ -43,14 +43,14 @@ The order of the `x-path` children matters and will return the first match.
              *  - `pathname` - the full pathname (window.location.pathname).
              *  - `queryObject` - the query parameters as an object.
              *  - `hash` - the hash part of the url.
-             *  - `name` - the name of the route defined in `x-path` element. If no match it will be null.
+             *  - `name` - the name of the route defined in `wc-path` element. If no match it will be null.
              *  - `state` - the `window.history.state` object for the route. Will only contain a state object if the route is `active`.
              *  - `active` - a boolean. Will be true if route exists and the route does not have a subroute.
              *  - `subroute` - an object that should be passed to a subroute.
              * @event route-change
              */
 
-            is: 'x-router',
+            is: 'wc-router',
 
             properties: {
 
@@ -267,10 +267,10 @@ The order of the `x-path` children matters and will return the first match.
             },
 
             /*
-             * Finds all child elements with selector `x-path[pattern][name]`.
+             * Finds all child elements with selector `wc-path[pattern][name]`.
              */
             _getRouteChildren: function () {
-                return this.querySelectorAll(`x-path[pattern][name]`);
+                return this.querySelectorAll(`wc-path[pattern][name]`);
             },
 
             /*

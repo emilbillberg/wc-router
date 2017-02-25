@@ -6,12 +6,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-  <title>x-router test</title>
+  <title>wc-router test</title>
 
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
 
-  <link rel="import" href="../x-router.html">
+  <link rel="import" href="../wc-router.html">
 
 </head>
 
@@ -19,26 +19,26 @@
 
   <test-fixture id="mainRouter">
     <template>
-      <x-router main>
-        <x-path name="home" pattern="^/$"></x-path>
-        <x-path name="signup" pattern="^/signup$"></x-path>
-        <x-path name="schedule" pattern="^/schedule$"></x-path>
-        <x-path name="info" pattern="^/info$"></x-path>
-      </x-router>
+      <wc-router main>
+        <wc-path name="home" pattern="^/$"></wc-path>
+        <wc-path name="signup" pattern="^/signup$"></wc-path>
+        <wc-path name="schedule" pattern="^/schedule$"></wc-path>
+        <wc-path name="info" pattern="^/info$"></wc-path>
+      </wc-router>
     </template>
   </test-fixture>
 
   <test-fixture id="subrouter">
     <template>
-      <x-router>
-        <x-path name="shoes" pattern="^/shoes$"></x-path>
-      </x-router>
+      <wc-router>
+        <wc-path name="shoes" pattern="^/shoes$"></wc-path>
+      </wc-router>
     </template>
   </test-fixture>
 
   <script>
 
-      suite('main x-router', function () {
+      suite('main wc-router', function () {
         
         let mainRouter;
         setup(function () {
@@ -48,7 +48,7 @@
         suite('initial setup', function () {
 
           test('has correct tag name', function () {
-            assert.equal(mainRouter.is, 'x-router');
+            assert.equal(mainRouter.is, 'wc-router');
           });
 
           test('is main', function () {
@@ -300,7 +300,7 @@
 
       });
 
-      suite('subrouter x-router', function () {
+      suite('subrouter wc-router', function () {
         
         let mainRouter;
         let subrouter;

@@ -4,13 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>x-router</title>
+    <title>wc-router</title>
 
     <script src="../webcomponentsjs/webcomponents-lite.js"></script>
 
     <link rel="import" href="../iron-component-page/iron-component-page.html">
   </head>
   <body>
-    <iron-component-page src="x-router.html"></iron-component-page>
+    <iron-component-page src="wc-router.html"></iron-component-page>
+
+    <wc-router>
+      <wc-path name="home" path="^/$"></wc-path>
+      <wc-path name="category" path="^/category$"></wc-path>
+    </wc-router>
+
   </body>
 </html>

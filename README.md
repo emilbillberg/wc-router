@@ -1,23 +1,23 @@
-[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/emilbillberg/x-router)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/emilbillberg/wc-router)
 
-# x-router
+# wc-router
 A lightweight client-side router built with webcomponents.
-- [Documentation](https://www.webcomponents.org/element/emilbillberg/x-router/x-router)
-- [Demo](https://www.webcomponents.org/element/emilbillberg/x-router/demo/demo/index.html)
+- [Documentation](https://www.webcomponents.org/element/emilbillberg/wc-router/wc-router)
+- [Demo](https://www.webcomponents.org/element/emilbillberg/wc-router/demo/demo/index.html)
 
 ## Install
 ```
-bower install --save emilbillberg/x-router
+bower install --save emilbillberg/wc-router
 ```
 
 ## Example
 ```
-<x-router main>
-    <x-path name="home" pattern="^/$"></x-path>
-    <x-path name="signup" pattern="^/signup$"></x-path>
-    <x-path name="schedule" pattern="^/schedule$"></x-path>
-    <x-path name="info" pattern="^/info$"></x-path>
-</x-router>
+<wc-router main>
+    <wc-path name="home" pattern="^/$"></wc-path>
+    <wc-path name="signup" pattern="^/signup$"></wc-path>
+    <wc-path name="schedule" pattern="^/schedule$"></wc-path>
+    <wc-path name="info" pattern="^/info$"></wc-path>
+</wc-router>
 ```
 
 ## Usage
