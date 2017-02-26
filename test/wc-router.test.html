@@ -202,10 +202,10 @@
 
           test('returns correct name in event', function (done) {
             mainRouter.addEventListener('route-change', (event) => {
-              assert.equal(event.detail.name, 'signup');
+              assert.equal(event.detail.name, 'schedule');
               done();
             });
-            mainRouter.push('/signup', null);
+            mainRouter.push('/schedule', null);
           });
 
           test('returns correct current pathname in event', function (done) {
@@ -218,10 +218,10 @@
 
           test('returns correct pathname in event', function (done) {
             mainRouter.addEventListener('route-change', (event) => {
-              assert.equal(event.detail.pathname, '/category/shoes');
+              assert.equal(event.detail.pathname, '/category/hats');
               done();
             });
-            mainRouter.push('/category/shoes', null);
+            mainRouter.push('/category/hats', null);
           });
 
           test('returns correct parent pathname in event', function (done) {
@@ -229,7 +229,7 @@
               assert.equal(event.detail.parentPathname, '');
               done();
             });
-            mainRouter.push('/category/shoes', null);
+            mainRouter.push('/info/shoes', null);
           });
 
           test('returns correct hash in event', function (done) {
@@ -292,10 +292,10 @@
 
           test('returns correct current pathname', function (done) {
             subrouter.addEventListener('route-change', (event) => {
-              assert.equal(event.detail.currentPathname, '/shoes');
+              assert.equal(event.detail.currentPathname, '/hats');
               done();
             });
-            mainRouter.push('/category/shoes', null);
+            mainRouter.push('/category/hats', null);
           });
 
           test('returns correct parent pathname', function (done) {
@@ -308,10 +308,10 @@
 
           test('returns correct pathname', function (done) {
             subrouter.addEventListener('route-change', (event) => {
-              assert.equal(event.detail.pathname, '/category/shoes');
+              assert.equal(event.detail.pathname, '/category/gloves');
               done();
             });
-            mainRouter.push('/category/shoes', null);
+            mainRouter.push('/category/gloves', null);
           });
 
           test('returns correct name', function (done) {
