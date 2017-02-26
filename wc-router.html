@@ -142,7 +142,7 @@ The order of the `wc-path` children matters and will return the first match.
          * A truthy replace parameter will use history.replaceState instead of history.pushState to navigate.
          */
         _go(pathname, state, replace) {
-            const paths = this._splitPathname(this._locationPathName());
+            const paths = this._splitPathname(window.location.pathname);
             const newPathname = this._currentPathnameFromPaths(paths, pathname, this.route.index);
             if (newPathname) {
                 if (replace) {
@@ -162,7 +162,7 @@ The order of the `wc-path` children matters and will return the first match.
         set route(route) {
             this._route = route;
             if (this._route.index !== 0) {
-                const paths = this._splitPathname(this._locationPathName());
+                const paths = this._splitPathname(window.location.pathname);
                 this._dispatchRouteChangeEvent();
             }
         }
@@ -179,10 +179,10 @@ The order of the `wc-path` children matters and will return the first match.
          */
         _dispatchRouteChangeEvent() {
             const children = this._getRouteChildren();
-            const paths = this._splitPathname(this._locationPathName());
+            const paths = this._splitPathname(window.location.pathname);
             const currentPathname = paths[this.route.index] || null;
             const parentPathname = paths.slice(0, this.route.index).join(``);
-            const pathname = window.decodeURIComponent(this._locationPathName());
+            const pathname = window.decodeURIComponent(window.location.pathname);
             const queryObject = this._queryStringToObject(window.location.search.substring(1));
             const hash = window.decodeURIComponent(window.location.hash.substring(1));
             const name = this._findChildNameForPath(children, currentPathname);
@@ -281,13 +281,6 @@ The order of the `wc-path` children matters and will return the first match.
                     .filter((pathname) => { return pathname !== ``; })
                     .map((pathname => { return `/${pathname}` }));
             }
-        }
-
-        /*
-         * Returns the window.location.pathname unless `_mockLocationPathname` has a value.
-         */
-        _locationPathName() {
-            return (this._mockLocationPathname) ? this._mockLocationPathname : window.location.pathname;
         }
 
     }
